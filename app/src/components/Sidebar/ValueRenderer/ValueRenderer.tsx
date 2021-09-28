@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import { default as ReactResizeDetector } from 'react-resize-detector'
 import { ValueRendererDisplayMode } from '../../../reducers/Settings'
 import { Typography, Fade, Grow } from '@material-ui/core'
+import CBOR from "cbor-js";
+import { base64ToArrayBuffer } from '../../helper/ArrayBufferConverter'
 
 interface Props {
   message: q.Message
@@ -44,6 +46,12 @@ class ValueRenderer extends React.Component<Props, State> {
     }
 
     const str = Base64Message.toUnicodeString(msg)
+
+    try {
+      var array = base64ToArrayBuffer(msg.base64Message);
+      var result = CBOR.decode(array);
+      return [JSON.stringify(result), 'json']
+    } catch  {}
     try {
       JSON.parse(str)
     } catch (error) {

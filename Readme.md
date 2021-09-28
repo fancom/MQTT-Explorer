@@ -35,6 +35,14 @@ yarn
 yarn dev
 ```
 
+## Build artifacts
+```bash
+yarn
+yarn prepare-release
+yarn package {linux|win}
+```
+artifacts are located in `build/clean/build/` folder
+
 The `app` directory contains all the rendering logic, the `backend` directory currently contains the models, tests, connection management, `src` contains all the electron bindings. [mqttjs](https://github.com/mqttjs/MQTT.js) is used to facilitate communication to MQTT brokers.
 
 ## Automated Tests

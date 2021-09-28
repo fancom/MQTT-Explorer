@@ -3,6 +3,9 @@ import React, { memo } from 'react'
 import { Base64Message } from '../../../../../backend/src/Model/Base64Message'
 import { Theme, withStyles } from '@material-ui/core'
 import { TopicViewModel } from '../../../model/TopicViewModel'
+import CBOR from "cbor-js";
+import { base64ToArrayBuffer } from '../../helper/ArrayBufferConverter'
+
 
 export interface TreeNodeProps extends React.HTMLAttributes<HTMLElement> {
   treeNode: q.TreeNode<TopicViewModel>
@@ -32,7 +35,16 @@ class TreeNodeTitle extends React.PureComponent<TreeNodeProps, {}> {
     }
 
     const str = Base64Message.toUnicodeString(this.props.treeNode.message.payload)
-    return str.length > limit ? `${str.slice(0, limit)}…` : str
+    try {
+     
+      var array = base64ToArrayBuffer(this.props.treeNode.message.payload.base64Message);
+      var result = CBOR.decode(array);
+      var resultStr = JSON.stringify(result);
+      return resultStr.length > limit ? `${resultStr.slice(0, limit)}…` : resultStr
+     
+    } catch  {
+     return str.length > limit ? `${str.slice(0, limit)}…` : str
+    }
   }
 
   private renderValue() {
