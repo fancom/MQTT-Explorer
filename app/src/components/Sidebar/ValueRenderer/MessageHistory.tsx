@@ -13,6 +13,8 @@ import { chartActions } from '../../../actions'
 import { connect } from 'react-redux'
 import CustomIconButton from '../../helper/CustomIconButton'
 import { MessageId } from '../MessageId'
+import CBOR from "cbor-js";
+import { base64ToArrayBuffer } from '../../helper/ArrayBufferConverter'
 
 const throttle = require('lodash.throttle')
 
@@ -82,7 +84,15 @@ class MessageHistory extends React.PureComponent<Props, State> {
     const history = node.messageHistory.toArray()
     let previousMessage: q.Message | undefined = node.message
     const historyElements = [...history].reverse().map((message, idx) => {
-      const value = message.payload ? Base64Message.toUnicodeString(message.payload) : ''
+      let value = message.payload ? Base64Message.toUnicodeString(message.payload) : ''
+      
+      try{
+          var array = base64ToArrayBuffer(message.payload.base64Message);
+          var result = CBOR.decode(array);
+          value = JSON.stringify(result);
+      }
+      catch{}
+
       const element = {
         value,
         key: `${message.messageNumber}-${message.received}`,
